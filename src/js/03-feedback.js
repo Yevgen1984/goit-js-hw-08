@@ -2,33 +2,30 @@ import * as throttle from 'lodash.throttle';
 
 const form = document.querySelector('form');
 const SAVED_KEY = 'feedback-form-state';
-const formValue = {};
+const formValue = JSON.parse(localStorage.getItem(SAVED_KEY)) || {};
 
 form.addEventListener('input', throttle(onGetData, 500));
 form.addEventListener('submit', sendForm);
 
 function onGetData(event) {
-  formValue[event.target.name] = event.target.value; /* запитати у Руслана */
-
+  const { name, value } = event.target;
+  formValue[name] = value; 
   localStorage.setItem(SAVED_KEY, JSON.stringify(formValue));
 }
 
 function saveMessage() {
-  const obj = JSON.parse(localStorage.getItem(SAVED_KEY));
-
-  const textarea = document.querySelector('textarea');
-  const input = document.querySelector('input');
-
-  if (localStorage.getItem(SAVED_KEY)) {
-    textarea.value = obj.message;
-    input.value = obj.email;
-  }
+  const { email, message } = form.elements;
+  email.value = formValue.email || '';
+  message.value = formValue.message || '';
 }
 saveMessage();
 
 function sendForm(event) {
   event.preventDefault();
   console.log(formValue);
-  event.target.reset(); /* запитати у Руслана про currentTarget/target */
+  event.target.reset(); 
   localStorage.removeItem(SAVED_KEY);
 }
+
+
+
